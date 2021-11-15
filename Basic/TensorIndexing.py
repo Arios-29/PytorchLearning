@@ -38,4 +38,5 @@ sub_1 = tensor_2[[1, 2], [1, 2], [2, 0]]
 # tensor_2[1][0][2]和tensor_2[2][0][0]
 sub_2 = tensor_2[[1, 2], [0], [2, 0]]
 
+# tensor_a[tensor_b],tensor_b是一个和tensor_a同样形状的类型为ByteTensor的张量,输出tensor_b元素为1对应位置的tensor_a的值构成的张量
 
