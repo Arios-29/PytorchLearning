@@ -29,6 +29,19 @@ print(matrix_x.grad)
 x = Variable(torch.rand((4, 4)), requires_grad=True)
 y = x * 2.0
 z = y.mean()
-grad_y = Variable(torch.ones((4, 4))*0.0625)
+grad_y = Variable(torch.ones((4, 4)) * 0.0625)
 y.backward(gradient=grad_y)
+print(x.grad)
+
+# backward()中的retain_graph参数
+# retain_graph设置为True将保留本次backward后非叶子结点到叶子节点的图结构
+# 此时再次backward会对叶子节点的梯度累加,非叶子节点梯度不会累加
+x = Variable(torch.rand((1, 4)), requires_grad=True)
+y = x * 2.0
+z_1 = y.mean()
+z_2 = y.sum()
+z_1.backward(retain_graph=True)
+print(x.grad)
+x.grad.zero_()  # 不让z_1对x的梯度累加到z_2对x的梯度上
+z_2.backward()
 print(x.grad)
