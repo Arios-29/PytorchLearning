@@ -26,3 +26,11 @@ class RNN(nn.Module):
     def forward(self, a_batch_of_seqs):
         output, final_state = self.net(a_batch_of_seqs)
         return output, final_state
+
+
+basic_rnn = RNN(10, 10, 2)
+# basic_rnn.weight_ih_l0为第一层的w参数,每一行对应第一层一个神经元的各w参数
+w1_ = basic_rnn.weight_ih_l0
+
+# basic_rnn.weight_hh_l0为第一层状态转移权重
+h1_ = basic_rnn.weight_hh_l0
