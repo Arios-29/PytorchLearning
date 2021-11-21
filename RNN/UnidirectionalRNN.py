@@ -32,5 +32,5 @@ basic_rnn = RNN(10, 10, 2)
 # basic_rnn.weight_ih_l0为第一层的w参数,每一行对应第一层一个神经元的各w参数
 w1_ = basic_rnn.weight_ih_l0
 
-# basic_rnn.weight_hh_l0为第一层状态转移权重
+# basic_rnn.weight_hh_l0为第一层状态转移权重,每一行对应第一层一个神经元的状态转移参数
 h1_ = basic_rnn.weight_hh_l0
