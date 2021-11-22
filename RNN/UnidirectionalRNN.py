@@ -23,8 +23,8 @@ class RNN(nn.Module):
         super(RNN, self).__init__()
         self.net = nn.RNN(xt_size, ht_size, num_layers)
 
-    def forward(self, a_batch_of_seqs):
-        output, final_state = self.net(a_batch_of_seqs)
+    def forward(self, a_batch_of_seqs, initial_state):
+        output, final_state = self.net(a_batch_of_seqs, initial_state)
         return output, final_state
 
 
@@ -32,5 +32,11 @@ basic_rnn = RNN(10, 10, 2)
 # basic_rnn.weight_ih_l0为第一层的w参数,每一行对应第一层一个神经元的各w参数
 w1_ = basic_rnn.weight_ih_l0
 
+# basic_rnn.bias_ih_l0为第一层的偏置,每一行对应第一层一个神经元的偏置参数
+bias_w = basic_rnn.bias_ih_l0
+
 # basic_rnn.weight_hh_l0为第一层状态转移权重,每一行对应第一层一个神经元的状态转移参数
 h1_ = basic_rnn.weight_hh_l0
+
+# basic_rnn.bias_hh_l0为第一层状态转移偏置,每一行对应第一层一个神经元的状态转移偏置
+bias_h = basic_rnn.bias_hh_l0
