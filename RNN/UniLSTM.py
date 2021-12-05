@@ -1,3 +1,4 @@
+import torch
 from torch import nn
 
 """
@@ -12,9 +13,10 @@ LSTM同RNN一样接收一批序列、对应的初始外部状态,此外LSTM还�
 """
 
 
-class LSTM(nn.Module):
+class UniLSTM(nn.Module):
+
     def __init__(self, xt_size, ht_size, num_layers):
-        super(LSTM, self).__init__()
+        super(UniLSTM, self).__init__()
         self.net = nn.LSTM(xt_size, ht_size, num_layers)
 
     def forward(self, a_batch_of_seqs, initial_outer_state, initial_inner_state):
@@ -23,4 +25,16 @@ class LSTM(nn.Module):
         return output, final_outer_state, final_inner_state
 
 
-lstm = LSTM(10, 10, 2)
+# 输入的x维度为10,每一时刻的输出维度为10,一共两层神经元
+lstm = UniLSTM(10, 10, 2)
+
+# 输入的每个序列长度为5,每个词x的维度为10,一批一共200个序列
+seq_batch = torch.rand(5, 200, 10)
+
+# 初始的外部状态
+# 每一个竖切面有2行对应2层神经元,每一层10个神经元,一共200个竖切面对应一批
+h0 = torch.rand(2, 200, 10)
+
+# 初始的内部状态
+# 每一个竖切面有2行对应2层神经元,每一层10个神经元,一共200个竖切面对应一批
+c0 = torch.rand(2, 200, 10)

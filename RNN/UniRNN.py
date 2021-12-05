@@ -1,3 +1,4 @@
+import torch
 from torch import nn
 
 """
@@ -17,9 +18,9 @@ final_state:(层数,一批中的序列数目,每一层神经元的数目),每一
 
 
 # 一个单向循环网络
-class RNN(nn.Module):
+class UniRNN(nn.Module):
     def __init__(self, xt_size, ht_size, num_layers):
-        super(RNN, self).__init__()
+        super(UniRNN, self).__init__()
         self.net = nn.RNN(xt_size, ht_size, num_layers)
 
     def forward(self, a_batch_of_seqs, initial_state):
@@ -27,7 +28,16 @@ class RNN(nn.Module):
         return output, final_state
 
 
-basic_rnn = RNN(10, 10, 2)
+# 输入的x维度为10,每一时刻输出的维度为10,一共2层
+basic_rnn = UniRNN(10, 10, 2)
+
+# 每个序列长度为5,每个序列的词x的维度为10,一批一共200个序列
+seq_batch = torch.rand(5, 200, 10)
+
+# 初始的隐状态
+# 每一个竖切面有2行对应2层神经元,每一层10个神经元,一共200个竖切面对应一批
+h0 = torch.rand(2, 200, 10)
+
 # basic_rnn.weight_ih_l0为第一层的w参数,每一行对应第一层一个神经元的各w参数
 w1_ = basic_rnn.weight_ih_l0
 
