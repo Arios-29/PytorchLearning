@@ -1,8 +1,8 @@
-from torch import nn
 import torch
+from torch import nn
 
 """
-nn.embedding嵌入层的使用
+nn.Embedding嵌入层的使用
 """
 
 # 初始的序列,批量大小为3
