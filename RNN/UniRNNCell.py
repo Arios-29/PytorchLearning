@@ -11,6 +11,7 @@ nn.RNNCell每次接收的一批数据为(批量大小,词维度),产生对应时
 # 定义一个两层的循环神经网络
 class UniRNN(nn.Module):
     def __init__(self, xt_size, nums_layer1, ht_size):
+        super(UniRNN, self).__init__()
         self.rnn_layer1 = nn.RNNCell(xt_size, nums_layer1)
         self.rnn_layer2 = nn.RNNCell(nums_layer1, ht_size)
 
@@ -24,6 +25,3 @@ class UniRNN(nn.Module):
             output.append(h2)  # 记录各个时刻的输出
         final_state = [h1, h2]
         return output, final_state
-
-
-
