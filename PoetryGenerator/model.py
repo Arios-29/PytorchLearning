@@ -20,4 +20,17 @@ class PoetryModel(nn.Module):
         :param initial_state: 为(outer_state, inner_state)的元组
         :return:
         """
-        # todo
+        a_batch_of_seq = a_batch_of_seq.t().contiguous()  # 将输入转为(批量大小,序列长度)的形状,对应嵌入层的输入
+        batch_size, seq_len = a_batch_of_seq.size()
+        seq_batch_embedded = self.embedding_layer(a_batch_of_seq)
+        if initial_state is not None:
+            output, final_outer_state, final_inner_state = self.lstm(seq_batch_embedded,
+                                                                     initial_state[0], initial_state[1])
+        else:
+            output, final_outer_state, final_inner_state = self.lstm(seq_batch_embedded)
+        # output的形状为(序列长度,批量大小,ht_size),需要转化成(序列长度*批量大小,ht_size)作为全连接层的输入
+        output = output.view(batch_size*seq_len, self.ht_size)
+        output = self.linear(output)
+        return output, final_outer_state
+
+
