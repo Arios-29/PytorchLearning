@@ -32,3 +32,8 @@ tensor_5 = tensor_5.squeeze(1)
 tensor_6 = torch.rand((1, 1, 1, 2, 1, 3))
 tensor_6 = tensor_6.squeeze()
 print(tensor_6.size())
+
+# tensor.size()可以返回torch.size类型或者元组类型
+tensor_7 = torch.rand(3, 3)
+row, col = tensor_7.size()
+print(row, col)
