@@ -6,7 +6,6 @@ nn.embedding嵌入层的使用
 """
 
 # 初始的序列,批量大小为3
-
 original_seq_batch = ['I am a boy.', 'How are you?', 'I am very lucky.']
 
 # 将序列标准化(程序过程略),即大写转小写,将标点与词分离,将句子拆分成词表示(标点也视作词)
