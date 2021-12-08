@@ -26,14 +26,17 @@ def linear(X, w, b):
 
 
 # 定义平方损失函数
+# 求一个批量的各样本的平均平方损失
+# 输入张量的形状为(batch_size, 1),即每一行对应一个样本的预测值或label
 def squared_loss(predict_y, y):
-    return ((predict_y - y) ** 2) / 2
+    batch_loss = ((predict_y - y) ** 2) / 2
+    return batch_loss.mean()
 
 
 # 定义优化算法
-def sgd(params, lr, batch_size):
+def sgd(params, lr):
     for param in params:
-        param.data -= (lr * param.grad) / batch_size  # Variable的data和grad形状一样
+        param.data -= lr * param.grad  # Variable的data和grad形状一样
 
 
 # 生成样本数据
@@ -61,28 +64,28 @@ def data_iter(batch_size, data_x, labels):
         yield batch_x, batch_y
 
 
-# 训练模型
 lr = 0.03
-num_epochs = 10
-for epoch in range(num_epochs):
-    for X, y in data_iter(batch_size, data_x, labels):  # 每个epoch要用完一次所有数据
-        loss = squared_loss(linear(X, w, b), y)  # loss的形状为(batch_size, 1),每一行对应一个样本输入的损失
-        batch_loss = loss.sum()  # 计算一个批量的总损失
-        batch_loss.backward()  # 反向求导
-        sgd([w, b], lr=lr, batch_size=batch_size)  # 参数优化
-        # 每次优化后对参数梯度清零
-        w.grad.data.zero_()
-        b.grad.data.zero_()
-    mean_of_all_loss = squared_loss(linear(data_x, w, b), labels).mean()
-    print("epoch %d , mean loss: %f" % (epoch + 1, mean_of_all_loss.item()))
-print(true_w, '\n', w)
-print(true_b, '\n', b)
+num_epochs = 100
+if __name__ == "__main__":
+    # 训练模型
+    for epoch in range(num_epochs):
+        for X, y in data_iter(batch_size, data_x, labels):  # 每个epoch要用完一次所有数据
+            batch_mean_loss = squared_loss(linear(X, w, b), y)  # 求一个批量的平均平方损失
+            batch_mean_loss.backward()  # 反向求导,得到每一个参数的平均梯度
+            sgd([w, b], lr=lr)  # 参数优化
+            # 每次优化后对参数梯度清零
+            w.grad.data.zero_()
+            b.grad.data.zero_()
+        mean_of_all_loss = squared_loss(linear(data_x, w, b), labels)
+        print("epoch %d , mean loss: %f" % (epoch + 1, mean_of_all_loss.item()))
+    print(true_w, '\n', w)
+    print(true_b, '\n', b)
 
-# 画出散点图(x1,x2,y)和学习后的函数拟合图
-fig = plt.figure()
-ax = plt.axes(projection='3d')
-ax.scatter(data_x[:, 0].numpy(), data_x[:, 1].numpy(), labels.numpy(), cmap='Blues')
-# 要求梯度的tensor不可转化numpy的数组类型,用detach复制一个与原tensor共享内存但是不在计算图中的tensor
-all_predict = linear(data_x, w, b).detach()
-ax.plot3D(data_x[:, 0].numpy(), data_x[:, 1].numpy(), all_predict[:, 0].numpy(), 'gray')
-plt.show()
+    # 画出散点图(x1,x2,y)和学习后的函数拟合图
+    fig = plt.figure()
+    ax = plt.axes(projection='3d')
+    ax.scatter(data_x[:, 0].numpy(), data_x[:, 1].numpy(), labels.numpy(), cmap='Blues')
+    # 要求梯度的tensor不可转化numpy的数组类型,用detach复制一个与原tensor共享内存但是不在计算图中的tensor
+    all_predict = linear(data_x, w, b).detach()
+    ax.plot3D(data_x[:, 0].numpy(), data_x[:, 1].numpy(), all_predict[:, 0].numpy(), 'gray')
+    plt.show()
