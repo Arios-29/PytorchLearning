@@ -1,7 +1,7 @@
 from torch import nn, optim
 import torch.utils.data as Data
 
-from LinearRegression import LinearImpl
+from LinearModule.LinearRegression import LinearImpl
 
 """
 用nn.linear实现线性回归
