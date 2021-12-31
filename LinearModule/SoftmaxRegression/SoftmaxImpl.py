@@ -1,11 +1,6 @@
-import sys
-from typing import List
-
 import torch
-from matplotlib import pyplot as plt
-import torch.utils.data as Data
-import torchvision.datasets
-from torchvision import transforms
+
+from LinearModule import Loader
 
 """
 softmax被用于n分类问题
@@ -17,56 +12,9 @@ softmax被用于n分类问题
 
 按批量进行迭代,则可以用一批量样本的平均交叉熵作为损失函数
 """
-
-#  获取训练数据集和测试集
-# train=True表示下载训练集,通过transforms.ToTensor()将图片转化为张量
-# 每一张图片的张量形状为(1,长度像素数,宽度像素数),每一个图片对应一个数字标签
-# mnist_train[i]表示(图片i张量,标签)
-mnist_train = torchvision.datasets.FashionMNIST(root='-/Datasets/FashionMNIST', train=True, download=True,
-                                                transform=transforms.ToTensor())
-mnist_test = torchvision.datasets.FashionMNIST(root='-/Datasets/FashionMNIST', train=False, download=True,
-                                               transform=transforms.ToTensor())
-train_data_nums = len(mnist_train)
-test_data_nums = len(mnist_test)
-
-
-# FashionMNIST数据集中一共有10类图片
-def get_fashion_mnist_labels(labels: List) -> List:
-    text_labels = ['t-shirt', 'trouser', 'pullover', 'dress', 'coat',
-                   'sandal', 'shirt', 'sneaker', 'bag', 'ankle', 'boot']
-    return [text_labels[i] for i in labels]
-
-
-# 根据张量画出图片
-def show_fashion_mnist(images: List, labels: List) -> None:
-    """
-    :param images: 图片张量列表
-    :param labels: 图片标签名列表
-    """
-    _, figs = plt.subplots(1, len(images), figsize=(12, 12))
-    for fig, image, label in zip(figs, images, labels):  # fig是一张子图
-        fig.imshow(image.view(28, 28).numpy())  # 将图片张量转化成28x28的numpy数组
-        fig.set_title(label)  # 以图片标签为子图标题
-        fig.axes.get_xaxis().set_visible(False)  # 不显示x轴
-        fig.axes.get_yaxis().set_visible(False)  # 不显示y轴
-    plt.show()
-
-
-X, y = [], []
-for i in range(10):
-    X.append(mnist_train[i][0])
-    y.append(mnist_train[i][1])
-show_fashion_mnist(X, get_fashion_mnist_labels(y))
-
-#  读取数据
+lr = 0.1
+num_epochs = 5
 batch_size = 100
-if sys.platform.startswith('win'):
-    num_workers = 0
-else:
-    num_workers = 4  # 读取数据的线程数
-train_iter = Data.DataLoader(mnist_train, shuffle=True, batch_size=batch_size, num_workers=num_workers)
-test_iter = Data.DataLoader(mnist_test, shuffle=True, batch_size=batch_size, num_workers=num_workers)
-
 x_size = 784  # 每张图片一共784个像素
 y_size = 10  # 对应10个类别的概率分布
 # 初始化参数
@@ -121,9 +69,10 @@ def sgd(params, lr):
         param.data -= lr * param.grad  # tensor的data和grad形状一样
 
 
-lr = 0.1
-num_epochs = 5
 if __name__ == '__main__':
+    mnist_data = Loader.MnistData()
+    train_iter = mnist_data.get_train_iter(batch_size=batch_size)
+    test_iter = mnist_data.get_test_iter(batch_size=10)
     # 训练模型
     for epoch in range(num_epochs):
         for X, y in train_iter:
