@@ -47,7 +47,7 @@ class MultiHeadAttention(nn.Module):
         :param keys: (batch_size, num_keys, key_size)
         :param values: (batch_size, num_values, value_size)
         :param valid_lens: (batch_size)或(batch_size, num_queries)
-        :return: (batch_size, num_queries, num_hidden)
+        :return: (batch_size, num_queries, num_hidden), num_hidden = num_heads*num_proj
         """
         multi_projected_keys = transpose_qkv(self.multi_key_proj(keys), self.num_heads)
         multi_projected_values = transpose_qkv(self.multi_value_proj(values), self.num_heads)
@@ -56,7 +56,7 @@ class MultiHeadAttention(nn.Module):
         if valid_lens is not None:
             valid_lens = torch.repeat_interleave(valid_lens, repeats=self.num_heads, dim=0)
             # (batch_size*num_heads)或(batch_size*num_heads, num_queries)
-        output = self.attention(keys, values, queries, valid_lens)
+        output = self.attention(multi_projected_keys, multi_projected_values, multi_projected_queries, valid_lens)
         # (batch_size*num_heads, num_queries, num_hidden/num_heads)
         output = transpose_output(output, self.num_heads)
         # (batch_size, num_queries, num_hidden),每一横切面一行对应同一原始查询对应多个头的注意力向量的拼接
