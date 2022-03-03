@@ -31,6 +31,8 @@ def transpose_output(X, num_heads):
 
 
 class MultiHeadAttention(nn.Module):
+    """num_proj*num_heads为最终输出的一个向量的维度
+       num_proj是指一个头投影后key、value、query的维度"""
     def __init__(self, key_size, value_size, query_size, num_proj, num_heads, drop_prob=0, bias=False):
         super(MultiHeadAttention, self).__init__()
         self.num_heads = num_heads
